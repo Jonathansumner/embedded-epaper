@@ -31,7 +31,6 @@ add_compile_options(-ffunction-sections -fdata-sections -fno-common -fmessage-le
 
 # uncomment to mitigate c++17 absolute addresses warnings
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-register")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os")
 
 # Enable assembler files preprocessing
 add_compile_options($<$<COMPILE_LANGUAGE:ASM>:-x$<SEMICOLON>assembler-with-cpp>)
@@ -54,7 +53,15 @@ include_directories(Core/Inc Drivers/STM32F3xx_HAL_Driver/Inc Drivers/STM32F3xx_
 
 add_definitions(-DDEBUG -DUSE_HAL_DRIVER -DSTM32F334x8)
 
-file(GLOB_RECURSE SOURCES "Core/*.*" "Drivers/*.*" "Core/User/util.cpp" "Core/User/gfx.cpp" "Core/User/shapes.cpp")
+file(GLOB_RECURSE SOURCES
+    "Core/*.*" "Drivers/*.*"
+    Core/User/util.cpp
+    Core/User/gfx.cpp
+    Core/User/shapes.cpp
+    Core/User/util.h
+    Core/User/gfx.h
+    Core/User/shapes.h
+)
 
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/STM32F334C8TX_FLASH.ld)
 
@@ -62,7 +69,7 @@ add_link_options(-Wl,-gc-sections,--print-memory-usage,-Map=${PROJECT_BINARY_DIR
 add_link_options(-mcpu=cortex-m4 -mthumb -mthumb-interwork)
 add_link_options(-T ${LINKER_SCRIPT})
 
-add_executable(${PROJECT_NAME}.elf ${SOURCES})
+add_executable(${PROJECT_NAME}.elf ${SOURCES} ${LINKER_SCRIPT})
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.hex)
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)
@@ -72,11 +79,3 @@ add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${PROJECT_NAME}.elf> ${BIN_FILE}
     COMMENT "Building ${HEX_FILE}
 Building ${BIN_FILE}")
-
-add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
-        COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:${PROJECT_NAME}.elf> ${HEX_FILE}
-        COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${PROJECT_NAME}.elf> ${BIN_FILE}
-        COMMAND ${SIZE} $<TARGET_FILE:${PROJECT_NAME}.elf>
-        COMMENT "Building ${HEX_FILE}
-Building ${BIN_FILE}
-Calculating size of ${PROJECT_NAME}.elf")

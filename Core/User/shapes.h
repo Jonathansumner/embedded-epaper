@@ -20,23 +20,23 @@ class gfx;
 
 class shapes {
     inline static int id = 0;
-//    inline static shapes* shapeList[100];
+    inline static shapes* shapeList[100];
 
 public:
     shapes() {
         _id = id++;
-//        addShape(this);
+        addShape(this);
     }
 
-//    static void addShape(shapes* shape) {
-//        if (id < 100) {
-//            shapeList[id++] = shape;
-//        }
-//    }
+    static void addShape(shapes* shape) {
+        if (id < 100) {
+            shapeList[id++] = shape;
+        }
+    }
 
-//    static shapes** getShapeList() {
-//        return shapeList;
-//    }
+    static shapes** getShapeList() {
+        return shapeList;
+    }
 
     virtual void draw() {};
 
@@ -67,7 +67,7 @@ private:
     int x, y;
     std::string content;
     unsigned char colour;
-    int f; // Assuming font is an int, change as needed
+    int f;
 };
 #endif // __cplusplus
 

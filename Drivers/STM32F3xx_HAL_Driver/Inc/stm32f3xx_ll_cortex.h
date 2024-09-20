@@ -303,7 +303,7 @@ __STATIC_INLINE uint32_t LL_SYSTICK_IsEnabledIT(void)
   */
 
 /**
-  * @brief  Processor uses epaper_sleep as its low power mode
+  * @brief  Processor uses sleep as its low power mode
   * @rmtoll SCB_SCR      SLEEPDEEP     LL_LPM_EnableSleep
   * @retval None
   */
@@ -314,7 +314,7 @@ __STATIC_INLINE void LL_LPM_EnableSleep(void)
 }
 
 /**
-  * @brief  Processor uses deep epaper_sleep as its low power mode
+  * @brief  Processor uses deep sleep as its low power mode
   * @rmtoll SCB_SCR      SLEEPDEEP     LL_LPM_EnableDeepSleep
   * @retval None
   */
@@ -325,7 +325,7 @@ __STATIC_INLINE void LL_LPM_EnableDeepSleep(void)
 }
 
 /**
-  * @brief  Configures epaper_sleep-on-exit when returning from Handler mode to Thread mode.
+  * @brief  Configures sleep-on-exit when returning from Handler mode to Thread mode.
   * @note   Setting this bit to 1 enables an interrupt-driven application to avoid returning to an
   *         empty main application.
   * @rmtoll SCB_SCR      SLEEPONEXIT   LL_LPM_EnableSleepOnExit
@@ -338,7 +338,7 @@ __STATIC_INLINE void LL_LPM_EnableSleepOnExit(void)
 }
 
 /**
-  * @brief  Do not epaper_sleep when returning to Thread mode.
+  * @brief  Do not sleep when returning to Thread mode.
   * @rmtoll SCB_SCR      SLEEPONEXIT   LL_LPM_DisableSleepOnExit
   * @retval None
   */

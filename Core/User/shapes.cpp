@@ -9,7 +9,7 @@ text::text(int x, int y, std::string content, int f, unsigned char colour) {
 }
 
 rectangle::rectangle(int x, int y, int width, int height, int fill, unsigned char colour) {
-//    this->x = x, this->y = y, this->width = width, this->height = height, this->fill = fill, this->colour = colour;
+    this->x = x, this->y = y, this->width = width, this->height = height, this->fill = fill, this->colour = colour;
 }
 
 void rectangle::draw() {

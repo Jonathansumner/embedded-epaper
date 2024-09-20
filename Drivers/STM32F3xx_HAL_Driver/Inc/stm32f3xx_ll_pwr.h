@@ -267,7 +267,7 @@ __STATIC_INLINE uint32_t LL_PWR_IsEnabledBkUpAccess(void)
 
 #if defined(PWR_CR_LPDS)
 /**
-  * @brief  Set voltage Regulator mode during deep epaper_sleep mode
+  * @brief  Set voltage Regulator mode during deep sleep mode
   * @rmtoll CR    LPDS         LL_PWR_SetRegulModeDS
   * @param  RegulMode This parameter can be one of the following values:
   *         @arg @ref LL_PWR_REGU_DSMODE_MAIN
@@ -280,7 +280,7 @@ __STATIC_INLINE void LL_PWR_SetRegulModeDS(uint32_t RegulMode)
 }
 
 /**
-  * @brief  Get voltage Regulator mode during deep epaper_sleep mode
+  * @brief  Get voltage Regulator mode during deep sleep mode
   * @rmtoll CR    LPDS         LL_PWR_GetRegulModeDS
   * @retval Returned value can be one of the following values:
   *         @arg @ref LL_PWR_REGU_DSMODE_MAIN

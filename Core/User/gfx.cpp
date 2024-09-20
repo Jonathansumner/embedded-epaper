@@ -64,29 +64,22 @@ void gfx::setPixel(int x, int y, uchar value) {
 }
 
 void gfx::setResolution(int w, int h) {
-    int _w = w, _h = h;
-    if (w <= 0 || h <= 0) {
-        _w = width;
-        _h = height;
-    }
     util::sendCmd(0x61); // Set Resolution setting
-    util::sendData((_w >> 8) & 0xFF); // Width high byte
-    util::sendData(_w & 0xFF);        // Width low byte
-    util::sendData((_h >> 8) & 0xFF); // Height high byte
-    util::sendData(_h & 0xFF);        // Height low byte
+    util::sendData((w >> 8) & 0xFF); // Width high byte
+    util::sendData(w & 0xFF);        // Width low byte
+    util::sendData((h >> 8) & 0xFF); // Height high byte
+    util::sendData(h & 0xFF);        // Height low byte
 }
 
 void gfx::displayFrame(unsigned char **image) {
     if (image == nullptr) {
+        printf("Image is null\n");
         return;
     }
-    setResolution(-1, -1);
+    setResolution(width, height);
     util::sendCmd(0x10);
     for (int i = 0; i < height; i++) {
-        if (image[i] == nullptr) {
-            continue;
-        }
-        for (int j = 0; j < width; j++) {
+        for (int j = 0; j < width/2; j++) {
             util::sendData(image[i][j]);
         }
     }
@@ -129,57 +122,57 @@ void gfx_init(int h, int w) {
 
 void gfx_clear() {
     digital_write(RST_PIN, 1);
-//    util::delay_ms(200);
-//    digital_write(RST_PIN, 0);
-//    util::delay_ms(1);
-//    digital_write(RST_PIN, 1);
-//    util::delay_ms(200);
-//    util::busyHigh();
-//    util::sendCmd(0x00);
-//    util::sendData(0xEF);
-//    util::sendData(0x08);
-//    util::sendCmd(0x01);
-//    util::sendData(0x37);
-//    util::sendData(0x00);
-//    util::sendData(0x23);
-//    util::sendData(0x23);
-//    util::sendCmd(0x03);
-//    util::sendData(0x00);
-//    util::sendCmd(0x06);
-//    util::sendData(0xC7);
-//    util::sendData(0xC7);
-//    util::sendData(0x1D);
-//    util::sendCmd(0x30);
-//    util::sendData(0x3C);
-//    util::sendCmd(0x41);
-//    util::sendData(0x00);
-//    util::sendCmd(0x50);
-//    util::sendData(0x37);
-//    util::sendCmd(0x60);
-//    util::sendData(0x22);
-//    util::sendCmd(0x61);
-//    util::sendData(0x02);
-//    util::sendData(0x58);
-//    util::sendData(0x01);
-//    util::sendData(0xC0);
-//    util::sendCmd(0xE3);
-//    util::sendData(0xAA);
-//    util::delay_ms(100);
-//    util::sendCmd(0x50);
-//    util::sendData(0x37);
-//    gfx::setResolution(20, 20);
-//    util::sendCmd(0x10);
-//    for (int i = 0; i < gfx::width / 2; i++) {
-//        for (int j = 0; j < gfx::height; j++)
-//            util::sendData(0x1);
-//    }
-//    util::sendCmd(0x04);//0x04
-//    util::busyHigh();
-//    util::sendCmd(0x12);//0x12
-//    util::busyHigh();
-//    util::sendCmd(0x02);  //0x02
-//    util::busyLow();
-//    util::delay_ms(1000);
+    util::delay_ms(200);
+    digital_write(RST_PIN, 0);
+    util::delay_ms(1);
+    digital_write(RST_PIN, 1);
+    util::delay_ms(200);
+    util::busyHigh();
+    util::sendCmd(0x00);
+    util::sendData(0xEF);
+    util::sendData(0x08);
+    util::sendCmd(0x01);
+    util::sendData(0x37);
+    util::sendData(0x00);
+    util::sendData(0x23);
+    util::sendData(0x23);
+    util::sendCmd(0x03);
+    util::sendData(0x00);
+    util::sendCmd(0x06);
+    util::sendData(0xC7);
+    util::sendData(0xC7);
+    util::sendData(0x1D);
+    util::sendCmd(0x30);
+    util::sendData(0x3C);
+    util::sendCmd(0x41);
+    util::sendData(0x00);
+    util::sendCmd(0x50);
+    util::sendData(0x37);
+    util::sendCmd(0x60);
+    util::sendData(0x22);
+    util::sendCmd(0x61);
+    util::sendData(0x02);
+    util::sendData(0x58);
+    util::sendData(0x01);
+    util::sendData(0xC0);
+    util::sendCmd(0xE3);
+    util::sendData(0xAA);
+    util::delay_ms(100);
+    util::sendCmd(0x50);
+    util::sendData(0x37);
+    gfx::setResolution(600, 448);
+    util::sendCmd(0x10);
+    for (int i = 0; i < 600 / 2; i++) {
+        for (int j = 0; j < 448; j++)
+            util::sendData(0x11);
+    }
+    util::sendCmd(0x04);//0x04
+    util::busyHigh();
+    util::sendCmd(0x12);//0x12
+    util::busyHigh();
+    util::sendCmd(0x02);  //0x02
+    util::busyLow();
+    util::delay_ms(1000);
 }
 
 void gfx_fill(uchar value) {
@@ -198,9 +191,9 @@ void displayFrame() {
 }
 
 void test() {
-    gfx_fill(0x77);
-//    rectangle rect = rectangle(5, 5, 20, 20, 3, 0x33);
-    text txt = text(5, 5, "hi", 8, 0x22);
+//    gfx_fill(0x77);
+    rectangle rect = rectangle(5, 5, 20, 20, 3, 0x33);
+//    text txt = text(5, 5, "hi", 8, 0x22);
 }
 
 }

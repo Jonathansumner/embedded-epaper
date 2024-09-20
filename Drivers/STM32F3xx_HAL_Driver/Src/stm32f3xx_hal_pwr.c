@@ -188,7 +188,7 @@ void HAL_PWR_DisableBkUpAccess(void)
    ====================
      [..]
       The Standby mode allows to achieve the lowest power consumption. It is based
-      on the Cortex-M4 deep epaper_sleep mode, with the voltage regulator disabled.
+      on the Cortex-M4 deep sleep mode, with the voltage regulator disabled.
       The 1.8V domain is consequently powered off. The PLL, the HSI oscillator and
       the HSE oscillator are also switched off. SRAM and register contents are lost
       except for the RTC registers, RTC backup registers, backup SRAM and Standby
