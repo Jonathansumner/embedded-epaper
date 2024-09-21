@@ -1,6 +1,8 @@
 #ifndef EPAPER_SHAPES_H
 #define EPAPER_SHAPES_H
 
+#define PI 3.14159265358979323846
+
 #ifdef __cplusplus
 #include <string>
 #endif
@@ -55,6 +57,16 @@ public:
 
 private:
     int x, y, width, height, fill;
+    unsigned char colour;
+};
+
+class roundedRectangle : public shapes {
+public:
+    roundedRectangle(int x, int y, int width, int height, int fill, unsigned char colour, int radius);
+    void draw() override;
+
+private:
+    int x, y, width, height, fill, radius;
     unsigned char colour;
 };
 

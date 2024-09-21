@@ -24,6 +24,30 @@
 
 extern SPI_HandleTypeDef hspi1;
 extern const uint8_t Font8_Table[];
+extern const uint8_t Font12_Table[];
+extern const uint8_t Font16_Table[];
+extern const uint8_t Font20_Table[];
+extern const uint8_t Font24_Table[];
+
+
+const Font util::fonts[] = {
+        {8,  1,8,  Font8_Table},
+        {12, 1,12, Font12_Table},
+        {16, 2,32, Font16_Table},
+//        {20, 2, 40, Font20_Table},
+//        {24, 3, 72, Font24_Table}
+};
+
+Font util::getFont(int size) {
+    for (const Font &font: fonts) {
+        if (font.sizeName == size) {
+            return font;
+        }
+    }
+    printf("Font size not found, using default font size 8\r\n");
+    return fonts[0];
+}
+
 
 void spiWriteByte(unsigned char value) {
     HAL_SPI_Transmit(&hspi1, &value, 1, 1000);
@@ -63,18 +87,24 @@ void util::moduleExit() {
 }
 
 
-std::vector<uint8_t> util::getFontData(const std::string &text) {
+std::pair<std::vector<uint8_t>, int> util::getFontData(const std::string &text, int fontSize) {
+    Font f = getFont(fontSize);
+
     std::vector<uint8_t> fontData;
-    int bytesPerCharacter = 8;
+    auto fontTable = f.table;
+    auto bytesPerCharacter = f.bytesPerCharacter;
     int asciiOffset = 32; // Assuming the table starts with the space character
+    int charCount = 0; // Counter for the number of characters processed
 
     for (char character: text) {
         int startIndex = (character - asciiOffset) * bytesPerCharacter;
-        fontData.insert(fontData.end(), Font8_Table + startIndex, Font8_Table + startIndex + bytesPerCharacter);
+        fontData.insert(fontData.end(), fontTable + startIndex, fontTable + startIndex + bytesPerCharacter);
+        charCount++; // Increment the character count
     }
 
-    return fontData;
+    return {fontData, f.columns}; // Return both fontData and charCount
 }
+
 
 
 void util::sendCmd(unsigned char Reg) {
@@ -105,41 +135,41 @@ void util::sleep() {
 
 
 void util::init() {
-//    util::reset();
-//    busyHigh();
-//    sendCmd(0x00);
-//    sendData(0xEF);
-//    sendData(0x08);
-//    sendCmd(0x01);
-//    sendData(0x37);
-//    sendData(0x00);
-//    sendData(0x23);
-//    sendData(0x23);
-//    sendCmd(0x03);
-//    sendData(0x00);
-//    sendCmd(0x06);
-//    sendData(0xC7);
-//    sendData(0xC7);
-//    sendData(0x1D);
-//    sendCmd(0x30);
-//    sendData(0x3C);
-//    sendCmd(0x41);
-//    sendData(0x00);
-//    sendCmd(0x50);
-//    sendData(0x37);
-//    sendCmd(0x60);
-//    sendData(0x22);
-//    sendCmd(0x61);
-//    sendData(0x02);
-//    sendData(0x58);
-//    sendData(0x01);
-//    sendData(0xC0);
-//    sendCmd(0xE3);
-//    sendData(0xAA);
-//
-//    delay_ms(100);
-//    sendCmd(0x50);
-//    sendData(0x37);
+    util::reset();
+    busyHigh();
+    sendCmd(0x00);
+    sendData(0xEF);
+    sendData(0x08);
+    sendCmd(0x01);
+    sendData(0x37);
+    sendData(0x00);
+    sendData(0x23);
+    sendData(0x23);
+    sendCmd(0x03);
+    sendData(0x00);
+    sendCmd(0x06);
+    sendData(0xC7);
+    sendData(0xC7);
+    sendData(0x1D);
+    sendCmd(0x30);
+    sendData(0x3C);
+    sendCmd(0x41);
+    sendData(0x00);
+    sendCmd(0x50);
+    sendData(0x37);
+    sendCmd(0x60);
+    sendData(0x22);
+    sendCmd(0x61);
+    sendData(0x02);
+    sendData(0x58);
+    sendData(0x01);
+    sendData(0xC0);
+    sendCmd(0xE3);
+    sendData(0xAA);
+
+    delay_ms(100);
+    sendCmd(0x50);
+    sendData(0x37);
 }
 
 void util::delay_ms(int i) {

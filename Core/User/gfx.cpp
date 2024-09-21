@@ -25,6 +25,12 @@ void gfx::allocateBuffer() {
     for (int i = 0; i < height; ++i) {
         buffer[i] = (uchar *) malloc(width * sizeof(uchar));
     }
+
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            buffer[i][j] = 0x11;
+        }
+    }
 }
 
 void gfx::freeBuffer() {
@@ -73,13 +79,13 @@ void gfx::setResolution(int w, int h) {
 
 void gfx::displayFrame(unsigned char **image) {
     if (image == nullptr) {
-        printf("Image is null\n");
+        printf("Image is null\r\n");
         return;
     }
     setResolution(width, height);
     util::sendCmd(0x10);
     for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width/2; j++) {
+        for (int j = 0; j < width / 2; j++) {
             util::sendData(image[i][j]);
         }
     }
@@ -98,6 +104,7 @@ uchar **gfx::readFrame() {
     for (int i = 0; i < height; ++i) {
         condensedBuffer[i] = (uchar *) malloc((width / 2) * sizeof(uchar));
     }
+    printf("Height: %i, Width: %i\r\n", height, width);
 
     // Fill the condensed buffer with the condensed pixel data
     for (int i = 0; i < height; ++i) {
@@ -106,6 +113,14 @@ uchar **gfx::readFrame() {
             uchar rightPixel = buffer[i][j + 1] & 0x0F;
             condensedBuffer[i][j / 2] = (leftPixel << 4) | rightPixel;
         }
+    }
+
+    //print the buffer
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width / 2; ++j) {
+            printf("%x ", condensedBuffer[i][j]);
+        }
+        printf("\r\n");
     }
 
     return condensedBuffer;
@@ -117,53 +132,15 @@ uchar **gfx::readFrame() {
 extern "C" {
 void gfx_init(int h, int w) {
     util::init();
-//    gfx::init(h, w);
+    gfx::init(h, w);
 }
 
 void gfx_clear() {
-    digital_write(RST_PIN, 1);
-    util::delay_ms(200);
-    digital_write(RST_PIN, 0);
-    util::delay_ms(1);
-    digital_write(RST_PIN, 1);
-    util::delay_ms(200);
-    util::busyHigh();
-    util::sendCmd(0x00);
-    util::sendData(0xEF);
-    util::sendData(0x08);
-    util::sendCmd(0x01);
-    util::sendData(0x37);
-    util::sendData(0x00);
-    util::sendData(0x23);
-    util::sendData(0x23);
-    util::sendCmd(0x03);
-    util::sendData(0x00);
-    util::sendCmd(0x06);
-    util::sendData(0xC7);
-    util::sendData(0xC7);
-    util::sendData(0x1D);
-    util::sendCmd(0x30);
-    util::sendData(0x3C);
-    util::sendCmd(0x41);
-    util::sendData(0x00);
-    util::sendCmd(0x50);
-    util::sendData(0x37);
-    util::sendCmd(0x60);
-    util::sendData(0x22);
-    util::sendCmd(0x61);
-    util::sendData(0x02);
-    util::sendData(0x58);
-    util::sendData(0x01);
-    util::sendData(0xC0);
-    util::sendCmd(0xE3);
-    util::sendData(0xAA);
-    util::delay_ms(100);
-    util::sendCmd(0x50);
-    util::sendData(0x37);
-    gfx::setResolution(600, 448);
+    auto w = 600, h = 448;
+    gfx::setResolution(w, h);
     util::sendCmd(0x10);
-    for (int i = 0; i < 600 / 2; i++) {
-        for (int j = 0; j < 448; j++)
+    for (int i = 0; i < w / 2; i++) {
+        for (int j = 0; j < h; j++)
             util::sendData(0x11);
     }
     util::sendCmd(0x04);//0x04
@@ -180,9 +157,12 @@ void gfx_fill(uchar value) {
 }
 
 void displayFrame() {
+    printf("reading frame\r\n");
     uchar **frame = gfx::readFrame();
+    printf("displaying frame\r\n");
     gfx::displayFrame(frame);
 
+    printf("Freeing memory\r\n");
     // Free the allocated memory for the condensed buffer
     for (int i = 0; i < gfx::height; ++i) {
         free(frame[i]);
@@ -192,8 +172,50 @@ void displayFrame() {
 
 void test() {
 //    gfx_fill(0x77);
-    rectangle rect = rectangle(5, 5, 20, 20, 3, 0x33);
-//    text txt = text(5, 5, "hi", 8, 0x22);
+    roundedRectangle rect = roundedRectangle(0, 0, 48, 16, 1, 0x66, 3);
+    rect.draw();
+    text txt0 = text(0, 2, "J", 8, 0x33);
+    txt0.draw();
+    text txt1 = text(10, 2, "J", 12, 0x33);
+    txt1.draw();
+    text txt2 = text(22, 2, "J", 16, 0x33);
+    txt2.draw();
 }
+
+void gfx_fun() {
+    auto w = 600, h = 448;
+    gfx::setResolution(w, h);
+    util::sendCmd(0x10);
+
+    const int sections = 8;
+    int sectionHeight = h / sections;
+    uchar values[sections] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
+
+    for (int section = 0; section < sections; ++section) {
+        for (int i = 0; i < w / 2; ++i) {
+            for (int j = section * sectionHeight; j < (section + 1) * sectionHeight; ++j) {
+                util::sendData(values[section]);
+            }
+        }
+    }
+
+    util::sendCmd(0x04);
+    util::busyHigh();
+    util::sendCmd(0x12);
+    util::busyHigh();
+    util::sendCmd(0x02);
+    util::busyLow();
+    util::delay_ms(1000);
+}
+
+//void draw() {
+//    auto shapes = shapes::getShapeList();
+//    for (int i = 0; i < 100; ++i) {
+//        if (shapes[i] != nullptr) {
+//            printf("Drawing shape %i\r\n", i);
+//            shapes[i]->draw();
+//        }
+//    }
+//}
 
 }

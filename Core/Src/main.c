@@ -51,6 +51,10 @@ int __io_putchar(int ch)
     HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
     return ch;
 }
+int _write(int file, char *ptr, int len) {
+    HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, HAL_MAX_DELAY); // Transmit entire string
+    return len;
+}
 
 /* USER CODE END PV */
 
@@ -100,12 +104,13 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-    printf("Hello World\n");
+    printf("\n\n\n\n---------------\r\nHello World\r\n");
 
-    gfx_init(30, 30);
+    gfx_init(16, 48);
     gfx_clear();
     test();
     displayFrame();
+    printf("Displayed frame\r\n");
 
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
     HAL_Delay(1000);

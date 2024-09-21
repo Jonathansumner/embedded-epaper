@@ -36,6 +36,7 @@ extern "C" {
 void draw();
 void test();
 void gfx_init(int h, int w);
+void gfx_fun();
 void gfx_clear();
 void gfx_fill(uchar value);
 void displayFrame();

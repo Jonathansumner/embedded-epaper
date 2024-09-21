@@ -9,9 +9,17 @@
 #include <vector>
 #include <string>
 
+
+struct Font {
+    int sizeName;
+    int columns;
+    int bytesPerCharacter;
+    const uint8_t *table;
+};
+
 class util {
 public:
-    static std::vector<uint8_t> getFontData(const std::string &text);
+    static std::pair<std::vector<uint8_t>, int> getFontData(const std::string &text, int fontSize);
 
     static void init();
 
@@ -32,6 +40,10 @@ public:
     static void busyLow();
 
     static void delay_ms(int i);
+
+    static const Font fonts[5];
+
+    static Font getFont(int size);
 };
 #endif // __cplusplus
 
