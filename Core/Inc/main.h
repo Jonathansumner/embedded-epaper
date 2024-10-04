@@ -27,7 +27,7 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f3xx_hal.h"
+#include "stm32h7xx_hal.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -58,7 +58,7 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 
-/* USER CODE BEGIN Private defines */
+  /* USER CODE BEGIN Private defines */
 #define RST_Pin GPIO_PIN_1     // Reset pin for e-Paper
 #define RST_GPIO_Port GPIOA    // Connected to PA1
 
@@ -79,6 +79,7 @@ void Error_Handler(void);
 
 #define DIN_Pin GPIO_PIN_7     // Data In (MOSI) for e-Paper
 #define DIN_GPIO_Port GPIOA    // Connected to PA7
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

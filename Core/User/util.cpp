@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include "util.h"
-#include "../Inc/stm32f3xx_hal_spi.h"
+#include "../Inc/stm32h7xx_hal_spi.h"
 
 #define EPD_5IN65F_WIDTH 600
 #define EPD_5IN65F_HEIGHT 448

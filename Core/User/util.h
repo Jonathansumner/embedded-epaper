@@ -2,8 +2,8 @@
 #define EPAPER_UTIL_H
 
 #include "main.h"
-#include "../Inc/stm32f3xx_hal.h"
-#include "../Inc/stm32f3xx_hal_gpio.h"
+#include "../Inc/stm32h7xx_hal.h"
+#include "../Inc/stm32h7xx_hal_gpio.h"
 
 #ifdef __cplusplus
 #include <vector>

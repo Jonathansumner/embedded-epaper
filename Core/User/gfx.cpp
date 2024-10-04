@@ -20,72 +20,92 @@
 #define digital_write(_pin, _value) HAL_GPIO_WritePin(_pin, _value == 0? GPIO_PIN_RESET:GPIO_PIN_SET)
 #define digital_read(_pin) HAL_GPIO_ReadPin(_pin)
 
-void gfx::allocateBuffer() {
-    buffer = (uchar **) malloc(height * sizeof(uchar *));
-    for (int i = 0; i < height; ++i) {
-        buffer[i] = (uchar *) malloc(width * sizeof(uchar));
+void gfx::allocateBuffer()
+{
+    buffer = (uchar**)malloc(height * sizeof(uchar*));
+    for (int i = 0; i < height; ++i)
+    {
+        buffer[i] = (uchar*)malloc(width * sizeof(uchar));
     }
 
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
+    for (int i = 0; i < height; ++i)
+    {
+        for (int j = 0; j < width; ++j)
+        {
             buffer[i][j] = 0x11;
         }
     }
 }
 
-void gfx::freeBuffer() {
-    for (int i = 0; i < height; ++i) {
+void gfx::freeBuffer()
+{
+    for (int i = 0; i < height; ++i)
+    {
         free(buffer[i]);
     }
     free(buffer);
 }
 
 // Define the gfx class methods
-void gfx::init(int h, int w) {
+void gfx::init(int h, int w)
+{
     height = h;
     width = w;
     allocateBuffer();
 }
 
-void gfx::clear() {
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
+void gfx::clear()
+{
+    for (int i = 0; i < height; ++i)
+    {
+        for (int j = 0; j < width; ++j)
+        {
             buffer[i][j] = 0x11;
         }
     }
 }
 
-void gfx::fill(uchar value) {
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
+void gfx::fill(uchar value)
+{
+    for (int i = 0; i < height; ++i)
+    {
+        for (int j = 0; j < width; ++j)
+        {
             buffer[i][j] = value;
         }
     }
 }
 
-void gfx::setPixel(int x, int y, uchar value) {
-    if (x >= 0 && x < width && y >= 0 && y < height) {
+void gfx::setPixel(int x, int y, uchar value)
+{
+    if (x >= 0 && x < width && y >= 0 && y < height)
+    {
         buffer[y][x] = value;
     }
 }
 
-void gfx::setResolution(int w, int h) {
+void gfx::setResolution(int w, int h)
+{
     util::sendCmd(0x61); // Set Resolution setting
     util::sendData((w >> 8) & 0xFF); // Width high byte
-    util::sendData(w & 0xFF);        // Width low byte
+    util::sendData(w & 0xFF); // Width low byte
     util::sendData((h >> 8) & 0xFF); // Height high byte
-    util::sendData(h & 0xFF);        // Height low byte
+    util::sendData(h & 0xFF); // Height low byte
 }
 
-void gfx::displayFrame(unsigned char **image) {
-    if (image == nullptr) {
+void gfx::displayFrame(unsigned char** image)
+{
+    if (image == nullptr)
+    {
         printf("Image is null\r\n");
         return;
     }
     setResolution(width, height);
     util::sendCmd(0x10);
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width / 2; j++) {
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width / 2; j++)
+        {
             util::sendData(image[i][j]);
         }
     }
@@ -99,16 +119,20 @@ void gfx::displayFrame(unsigned char **image) {
 }
 
 
-uchar **gfx::readFrame() {
-    auto **condensedBuffer = (uchar **) malloc(height * sizeof(uchar *));
-    for (int i = 0; i < height; ++i) {
-        condensedBuffer[i] = (uchar *) malloc((width / 2) * sizeof(uchar));
+uchar** gfx::readFrame()
+{
+    auto** condensedBuffer = (uchar**)malloc(height * sizeof(uchar*));
+    for (int i = 0; i < height; ++i)
+    {
+        condensedBuffer[i] = (uchar*)malloc((width / 2) * sizeof(uchar));
     }
     printf("Height: %i, Width: %i\r\n", height, width);
 
     // Fill the condensed buffer with the condensed pixel data
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; j += 2) {
+    for (int i = 0; i < height; ++i)
+    {
+        for (int j = 0; j < width; j += 2)
+        {
             uchar leftPixel = buffer[i][j] & 0x0F;
             uchar rightPixel = buffer[i][j + 1] & 0x0F;
             condensedBuffer[i][j / 2] = (leftPixel << 4) | rightPixel;
@@ -116,8 +140,10 @@ uchar **gfx::readFrame() {
     }
 
     //print the buffer
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width / 2; ++j) {
+    for (int i = 0; i < height; ++i)
+    {
+        for (int j = 0; j < width / 2; ++j)
+        {
             printf("%x ", condensedBuffer[i][j]);
         }
         printf("\r\n");
@@ -127,52 +153,58 @@ uchar **gfx::readFrame() {
 }
 
 
-
 // Define the C-compatible functions
 extern "C" {
-void gfx_init(int h, int w) {
+void gfx_init(int h, int w)
+{
     util::init();
     gfx::init(h, w);
 }
 
-void gfx_clear() {
+void gfx_clear()
+{
     auto w = 600, h = 448;
     gfx::setResolution(w, h);
     util::sendCmd(0x10);
-    for (int i = 0; i < w / 2; i++) {
+    for (int i = 0; i < w / 2; i++)
+    {
         for (int j = 0; j < h; j++)
             util::sendData(0x11);
     }
-    util::sendCmd(0x04);//0x04
+    util::sendCmd(0x04); //0x04
     util::busyHigh();
-    util::sendCmd(0x12);//0x12
+    util::sendCmd(0x12); //0x12
     util::busyHigh();
-    util::sendCmd(0x02);  //0x02
+    util::sendCmd(0x02); //0x02
     util::busyLow();
     util::delay_ms(1000);
 }
 
-void gfx_fill(uchar value) {
+void gfx_fill(uchar value)
+{
     gfx::fill(value);
 }
 
-void displayFrame() {
+void displayFrame()
+{
     printf("reading frame\r\n");
-    uchar **frame = gfx::readFrame();
+    uchar** frame = gfx::readFrame();
     printf("displaying frame\r\n");
     gfx::displayFrame(frame);
 
     printf("Freeing memory\r\n");
     // Free the allocated memory for the condensed buffer
-    for (int i = 0; i < gfx::height; ++i) {
+    for (int i = 0; i < gfx::height; ++i)
+    {
         free(frame[i]);
     }
     free(frame);
 }
 
-void test() {
-//    gfx_fill(0x77);
-    roundedRectangle rect = roundedRectangle(0, 0, 48, 16, 1, 0x66, 3);
+void test()
+{
+    //    gfx_fill(0x77);
+    roundedRectangle rect = roundedRectangle(0, 0, 600, 448, 6, 0x66, 16);
     rect.draw();
     text txt0 = text(0, 2, "J", 8, 0x33);
     txt0.draw();
@@ -182,7 +214,8 @@ void test() {
     txt2.draw();
 }
 
-void gfx_fun() {
+void gfx_fun()
+{
     auto w = 600, h = 448;
     gfx::setResolution(w, h);
     util::sendCmd(0x10);
@@ -191,9 +224,12 @@ void gfx_fun() {
     int sectionHeight = h / sections;
     uchar values[sections] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
 
-    for (int section = 0; section < sections; ++section) {
-        for (int i = 0; i < w / 2; ++i) {
-            for (int j = section * sectionHeight; j < (section + 1) * sectionHeight; ++j) {
+    for (int section = 0; section < sections; ++section)
+    {
+        for (int i = 0; i < w / 2; ++i)
+        {
+            for (int j = section * sectionHeight; j < (section + 1) * sectionHeight; ++j)
+            {
                 util::sendData(values[section]);
             }
         }
@@ -217,5 +253,4 @@ void gfx_fun() {
 //        }
 //    }
 //}
-
 }
